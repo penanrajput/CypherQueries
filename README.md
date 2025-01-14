@@ -68,7 +68,7 @@ Neo4j doesn't have a direct equivalent for creating or managing users via Cypher
 
             ```sql
             <!-- Cypher Query -->
-            Copy code
+    
             MATCH (n:OriginalTable)
             CREATE (m:NewTable) SET m = n;
             ``` 
