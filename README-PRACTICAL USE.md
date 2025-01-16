@@ -93,22 +93,28 @@ CREATE (learner:Learner {name:"Penan"})-[:SAYS]->(greeting:Greeting {message:"Ni
 MATCH (n)
 RETURN n LIMIT 10
 ```
+![Alt Text](src/Example4A.png)
+
 ```sql
 //Return all nodes that have a Student label (limit to 10 results)
 MATCH (n:Student)
 RETURN n LIMIT 10
 ```
+
+![Alt Text](src/Example4B.png)
 ```sql
 //Return all nodes that have a property first (name) with value 'Alia'
 MATCH (n {first:'Alia'})
 RETURN n
 ```
+![Alt Text](src/Example4C.png)
 ```sql
 //Return all nodes that have a Student label and property first with value 'Alia'
 //This query should be faster when we use a label!
 MATCH (n:Student {first:'Alia'})
 RETURN n
 ```
+![Alt Text](src/Example4D.png)
 ```sql
 //Return all nodes that have a Student label and property first with value 'Alia'
 //We can also use WHERE
@@ -116,14 +122,95 @@ MATCH (n:Student)
 WHERE n.first = 'Alia'
 RETURN n
 ```
+![Alt Text](src/Example4E.png)
 ```sql
 //Return all Year nodes after 2006
 MATCH (n:Year)
 WHERE n.value > 2006
 RETURN n
-
 ```
+![Alt Text](src/Example4F.png)
 
+
+## MATCHing Nodes and Relationships
+```sql
+//Return all students with the first name Alia who've studied abroad
+MATCH (s:Student {first:'Alia'})--(c:Country)
+RETURN *
+```
+![Alt Text](src/Example5A.png)
+```sql
+//Return all students with the first name Alia who have studied abroad 
+//This query should be faster when we use a relationship type and direction!
+MATCH (s:Student {first:'Alia'})-[:STUDIED_ABROAD_IN]->(c:Country)
+RETURN *
+```
+![Alt Text](src/Example5B.png)
+```sql
+//Return all students with a GPA above 3.98
+MATCH (s:Student)-[r:OBTAINED]->()
+WHERE r.gpa >3.98
+RETURN s.first, s.last, r.gpa
+```
+![Alt Text](src/Example5C.png)
+```sql
+//Return all students with firstname Alia with a GPA above 3.0
+MATCH (s:Student)-[r:OBTAINED]->()
+WHERE r.gpa >3.0 AND s.first = 'Alia'
+RETURN s.first, s.last, r.gpa
+```
+![Alt Text](src/Example5D.png)
+```sql
+//Return all students with firstname Alia with a GPA above 3.0
+//We can change our references using AS
+MATCH (s:Student)-[r:OBTAINED]->()
+WHERE r.gpa >3.0 AND s.first = 'Alia'
+RETURN s.first AS Name, s.last AS `Family Name`, r.gpa AS GPA
+```
+![Alt Text](src/Example5E.png)
+
+## Counting and aggregating data
+```sql
+//How many students studied abroad?
+MATCH (s:Student)-[:STUDIED_ABROAD_IN]->(c:Country)
+RETURN count(s) AS `Students Abroad`
+```
+![Alt Text](src/Example6A.png)
+```sql
+//Find and collect all students with firstname Alia or Colleen who studied abroad and in which country
+MATCH (s:Student)-[:STUDIED_ABROAD_IN]->(c:Country)
+WHERE s.first = 'Alia' OR s.first = 'Colleen'
+RETURN collect(s.first + ' ' + s.last) AS Name, c.name AS Country
+```
+![Alt Text](src/Example6B.png)
+```sql
+//Find how many students who studied abroad per country
+MATCH (s:Student)-[:STUDIED_ABROAD_IN]->(c:Country)
+WITH collect(s) AS students, c
+RETURN size(students) AS `Number of Students`, c.name AS Country
+```
+![Alt Text](src/Example6C.png)
+```sql
+//RETURN 10 students in ascending alphabetical order on first name
+MATCH (s:Student)
+RETURN s.first, s.last ORDER BY s.first LIMIT 10
+```
+![Alt Text](src/Example6D.png)
+```sql
+//Find how many students who studied abroad per country, ordered from highest to lowest
+MATCH (s:Student)-[:STUDIED_ABROAD_IN]->(c:Country)
+WITH collect(s) AS students, c
+RETURN size(students) AS Students, c.name AS Country ORDER BY Students DESC
+```
+![Alt Text](src/Example6E.png)
+```sql
+//WITH and WHERE example
+//Find countries where at least 150 students studied there
+MATCH (s:Student)-[:STUDIED_ABROAD_IN]->(c:Country)
+WITH collect(s) AS students, c WHERE size(students) >= 150
+RETURN size(students) AS `Number of Students`, c.name AS Country
+```
+![Alt Text](src/Example6F.png)
 
 # CYPHER Queries Cheatsheet
 
