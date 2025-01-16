@@ -9,6 +9,122 @@ Email : <penanrajput1998@gmail.com> <br>
 
 ![Alt Text](src/Cypher1.png)
 
+# Property Graph Components
+## Nodes
+![Alt Text](src/node.png)
+## Relationships
+![Alt Text](src/relationship.png)
+## Labels
+![Alt Text](src/labels%20&%20type.png)
+## Properties
+![Alt Text](src/properties.png)
+
+# Example
+![Alt Text](src/Example1A.png)
+![Alt Text](src/Example1B.png)
+![Alt Text](src/Example1C.png)
+![Alt Text](src/Example1D.png)
+
+# Example 2
+![Alt Text](src/Example2A.png)
+
+```sql
+CREATE (learner:Learner {name:"Penan"}),
+        (hello:Greeting {message:"Hello, World!"}),
+        (learner) - [r:SAYS] -> (hello)
+```
+
+```
+Added 2 labels, created 2 nodes, set 2 properties, created 1 relationship, completed after 22 ms.
+```
+
+
+```sql
+MATCH(learner:Learner) - [rel] - (greeting:Greeting)
+RETURN *
+```
+![Alt Text](src/Example2B.png)
+
+# NEO4J UI Shortcuts
+1. Double Click on node to open node details
+2. Double Click on relationship to open relationship details
+3. Double Click on label to open label details
+4. Double Click on property to open property details
+5. Double Click on property value to open property value details
+
+# Introducing Cypher
+* Graph query language
+* Declarative
+* Everything is a pattern
+```sql
+(penan:Learner {name:"Penan"}) - [r:SAYS] -> (text:Greeting {message:"Hello, World!"})
+```
+
+## Representing Graph Patterns: Nodes
+```sql
+() - a node
+(referenceA)
+(referenceA:Label)
+(referenceA:Label {propertyKey:value})
+```
+
+## Representing Graph Patterns: Relationships
+```sql
+--    = A relationship
+-->   = A relationship with direction
+-[]-> = (also) A Relationship with direction 
+
+-[refB]-> 
+-[refB:TYPE]
+```
+
+Example : 
+```sql
+CREATE (learner:Learner {name:"Penan"})-[:SAYS]->(greeting:Greeting {message:"Nice To Meet You!"}) 
+```
+![Alt Text](src/Example3A.png)
+
+## MATCHING nodes
+* MATCHing nodes
+* MATCHing properties on nodes
+
+```sql
+//Return all nodes in the database (limit to 10 results)
+MATCH (n)
+RETURN n LIMIT 10
+```
+```sql
+//Return all nodes that have a Student label (limit to 10 results)
+MATCH (n:Student)
+RETURN n LIMIT 10
+```
+```sql
+//Return all nodes that have a property first (name) with value 'Alia'
+MATCH (n {first:'Alia'})
+RETURN n
+```
+```sql
+//Return all nodes that have a Student label and property first with value 'Alia'
+//This query should be faster when we use a label!
+MATCH (n:Student {first:'Alia'})
+RETURN n
+```
+```sql
+//Return all nodes that have a Student label and property first with value 'Alia'
+//We can also use WHERE
+MATCH (n:Student)
+WHERE n.first = 'Alia'
+RETURN n
+```
+```sql
+//Return all Year nodes after 2006
+MATCH (n:Year)
+WHERE n.value > 2006
+RETURN n
+
+```
+
+
 # CYPHER Queries Cheatsheet
 
 1. Database
