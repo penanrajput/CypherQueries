@@ -464,86 +464,220 @@ RETURN size(students) AS `Number of Students`, c.name AS Country
 
 # SAMPLE DATABASE
 ```sql
-CREATE (:Emp {id:1, name:"Penan", age:21, salary:100}),
-        (:Emp {id:2, name:"Aron", age:22, salary:110}),
-        (:Emp {id:3, name:"Robert", age:23, salary:190}),
-        (:Emp {id:4, name:"Rockstar", age:24, salary:160}),
-        (:Emp {id:5, name:"John", age:26, salary:180}),
-        (:Emp {id:6, name:"Jack", age:27, salary:170})
+// Step 1: Delete all existing Employee nodes
+MATCH (e:Employee) DETACH DELETE e;
+
+// Step 2: Create new Employee nodes
+CREATE (:Employee {id:1, name:"Penan", age:21}),
+        (:Employee {id:2, name:"Aron", age:22, salary:110}),
+        (:Employee {id:3, name:"Penan", age:23})
 ```
+
+# MERGE
+
+```sql
+
+MERGE is a clause used to ensure that specific patterns (nodes, relationships, or both) exist in the database. 
+
+If the pattern does not exist, Cypher will create it. 
+
+If it does exist, Cypher will match it. 
+
+This is particularly useful for avoiding duplicate data.
+```
+
+
+## Key Points About MERGE
+<b>Matching:</b>
+        If a node or relationship with the specified properties and structure already exists, MERGE will match it.
+        
+<b>Creating:</b>
+        If the pattern does not exist, MERGE creates it.
+
+<b>Conditional Actions:</b>
+        You can define actions to take whether the pattern is matched or created using ON MATCH and ON CREATE.
+
+## Why Use MERGE?
+* To prevent duplicate nodes or relationships.
+* To combine "find or create" logic into a single statement.
+* To maintain data consistency in scenarios where uniqueness is important.
+
+
+## Ex 1. If node does not exists
+
+
+
+```sql
+// Step 1: Delete all existing Employee nodes
+MATCH (e:Employee) DETACH DELETE e;
+
+// Step 2: Create new Employee nodes
+CREATE (:Employee {id:1, name:"Penan", age:21}),
+        (:Employee {id:2, name:"Aron", age:22, salary:110}),
+        (:Employee {id:3, name:"Penan", age:23})
+```
+![Alt Text](src/Example7A.png)
+```sql
+// 3rd Step :
+MERGE (n:Employee {age: 26})
+RETURN n;
+```
+![Alt Text](src/Example7B.png)
+
+
+## Ex 2. Ensure a Node Exists
+
+* When you use MERGE in Cypher, it tries to match the specified pattern first. If the pattern (node, relationship, or both) already exists, MERGE simply matches it and does nothing else by default. 
+* It does not create duplicates or change the existing pattern unless you explicitly define actions with ON MATCH
+```sql
+// Step 1: Delete all existing Employee nodes
+MATCH (e:Employee) DETACH DELETE e;
+
+// Step 2: Create new Employee nodes
+CREATE (:Employee {id:1, name:"Penan", age:21}),
+        (:Employee {id:2, name:"Aron", age:22, salary:110}),
+        (:Employee {id:3, name:"Penan", age:23})
+```
+![Alt Text](src/Example7A.png)
+
+
+* If a node labeled Person with name = "Penan" already exists, it will match it means does nothing.
+
+### 2a = MERGE Containing all the properties
+```sql
+// 3rd Step :
+MERGE (n:Employee {name :"Penan", id: 1, age:21})
+RETURN n;
+
+MATCH(n:Employee) RETURN n
+```
+![Alt Text](src/Example7C.png)
+![Alt Text](src/Example7D.png)
+
+
+
+### 2b = MERGE Containing some the properties
+```sql
+// 3rd Step :
+MERGE (n:Employee {name :"Penan"})
+RETURN n;
+
+MATCH(n:Employee) RETURN n
+```
+![Alt Text](src/Example7E.png)
+![Alt Text](src/Example7F.png)
+
+<b>
+Lesson : We can some of the properties inside MATCH and no need to mention all the properties.
+</b>
+
+## Ex 3. Ensure a Relationship Exists
+```sql
+MERGE (p1:Person {name: "Alice"})-[:KNOWS]->(p2:Person {name: "Bob"})
+RETURN p1, p2;
+```
+* If the KNOWS relationship between Alice and Bob exists, it will match it.
+* If not, it will create the relationship.
+
+## Ex 4. Use ON CREATE and ON MATCH
+
+![Alt Text](src/Example7A.png)
+
+
+```sql
+MERGE (n:Employee {name: "Penan"})
+ON CREATE SET n.createdAt = timestamp()
+ON MATCH SET n.lastAccessed = timestamp()
+RETURN n;
+```
+* If the node is created, it sets the createdAt property.
+
+
+
+* If the node is matched, it updates the lastAccessed property.
+
+
+
+Overall Result
+
+
 
 
 # TOPICS In CYPHER / NODE4J
 
 
-1. Basic Operations
+# 1. Basic Operations
 
         Node Creation: Creating nodes with labels and properties.
         Relationship Creation: Establishing relationships between nodes.
         Reading Data: Querying nodes, relationships, and paths.
         Updating Data: Updating properties of nodes and relationships.
         Deleting Data: Deleting nodes, relationships, or both.
-2. Advanced Matching
+# 2. Advanced Matching
 
         Pattern Matching: Using patterns to find specific nodes or paths.
         Optional Matching: Handling missing relationships using OPTIONAL MATCH.
         Variable-Length Paths: Matching paths of arbitrary lengths.
         Conditional Matching: Filtering results with WHERE clauses.
 
-3. Relationship Queries
+# 3. Relationship Queries
 
         Types of Relationships: Querying specific relationship types.
         Direction of Relationships: Matching relationships in a specific direction.
         Quantified Path Patterns: Working with advanced path matching.
-4. Aggregation and Grouping
+# 4. Aggregation and Grouping
 
         Aggregation Functions: Using COUNT, SUM, AVG, MIN, MAX.
         Grouping Results: Grouping data using WITH.
-5. Functions
+# 5. Functions
 
         String Functions: toUpper(), toLower(), substring(), etc.
         Numeric Functions: abs(), ceil(), floor(), etc.
         Date/Time Functions: Working with temporal data.
         Collection Functions: Manipulating lists and collections.
         Spatial Functions: Working with geospatial data.
-6. Data Modeling
+# 6. Data Modeling
 
         Labels and Properties: Structuring data with labels and key-value pairs.
         Constraints: Enforcing data integrity with uniqueness or property constraints.
         Indexes: Optimizing query performance.
-7. Path Queries
+# 7. Path Queries
 
         Shortest Path: Finding the shortest path between two nodes.
         All Paths: Finding all possible paths between nodes.
         Weighted Paths: Working with paths that have weights.
-8. Subqueries
+# 8. Subqueries
 
         Nested Queries: Using subqueries to process intermediate results.
         Unwind: Expanding collections into rows for processing.
-9. Data Import and Export
+# 9. Data Import and Export
 
-        Importing Data: Using CSV files with LOAD CSV.
-        Exporting Data: Exporting query results to external systems.
-10. Full-Text Search
+## Importing Data: Using CSV files with LOAD CSV.
+
+
+## Exporting Data: Exporting query results to external systems.
+
+
+# 10. Full-Text Search
 
         Using full-text indexing for advanced search capabilities.
-11. Security
+# 11. Security
 
         User Authentication: Managing user roles and permissions.
         Data Masking: Protecting sensitive information.
-12. Transactions and Performance
+# 12. Transactions and Performance
 
         Transactions: Managing multi-step operations.
         Query Tuning: Using PROFILE and EXPLAIN to optimize queries.
-13. Advanced Topics
+# 13. Advanced Topics
 
         Graph Algorithms: Centrality, community detection, etc.
         APOC Procedures: Leveraging the APOC plugin for enhanced capabilities.
         Data Integration: Connecting Neo4j with external systems (e.g., Kafka, Elasticsearch).
 
-14. Visualization
+# 14. Visualization
 
         Displaying graph data in the Neo4j browser or external visualization tools.
-15. Integration with Other Languages
+# 15. Integration with Other Languages
 
         Using Cypher with Java, Python, JavaScript, and other programming languages via Neo4j drivers.
