@@ -66,6 +66,15 @@ RETURN *
 (referenceA)
 (referenceA:Label)
 (referenceA:Label {propertyKey:value})
+
+() = a node
+(p:Person) 
+        p = node variable/referenceA
+        Person = node label
+        {propertyKey:value} = node properties
+        propertyKey = property key
+        value = property value
+
 ```
 
 ## Representing Graph Patterns: Relationships
