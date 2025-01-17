@@ -654,6 +654,35 @@ Overall Result
 
 ## Importing Data: Using CSV files with LOAD CSV.
 
+file.csv
+```sql
+student_name,college_name,student_id,college_id
+Alice,Harvard,1,101
+Bob,Stanford,2,102
+Charlie,MIT,3,103
+Alice,MIT,1,103
+```
+
+```sql
+LOAD CSV WITH HEADERS FROM 'file:///students_colleges.csv' AS row
+
+// Create or Match Student Nodes
+MERGE (student:Student 
+        { id: toInteger(row.student_id) }
+      )
+SET student.name = row.student_name
+
+// Create or Match College Nodes
+MERGE (college:College 
+        { id: toInteger(row.college_id) }
+        )
+SET college.name = row.college_name
+
+// Create the STUDIES Relationship
+MERGE (student)-[:STUDIES]->(college);
+```
+
+
 
 ## Exporting Data: Exporting query results to external systems.
 

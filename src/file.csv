@@ -1,0 +1,5 @@
+student_name,college_name,student_id,college_id
+Alice,Harvard,1,101
+Bob,Stanford,2,102
+Charlie,MIT,3,103
+Alice,MIT,1,103
