@@ -664,7 +664,7 @@ Alice,MIT,1,103
 ```
 
 ```sql
-LOAD CSV WITH HEADERS FROM 'file:///students_colleges.csv' AS row
+LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/penanrajput/CypherQueries/6d4eceb491078fa38e10647619a9261425424dad/src/file.csv' AS row
 
 // Create or Match Student Nodes
 MERGE (student:Student 
@@ -682,6 +682,13 @@ SET college.name = row.college_name
 MERGE (student)-[:STUDIES]->(college);
 ```
 
+To view the complete graph (students, colleges, and their relationships):
+```sql
+MATCH (s:Student)-[r:STUDIES]->(c:College)
+RETURN s, r, c;
+```
+
+<img src="src/Example8A.png" alt="Alt Text" width="100%" height="auto">
 
 
 ## Exporting Data: Exporting query results to external systems.
